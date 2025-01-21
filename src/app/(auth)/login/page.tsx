@@ -1,6 +1,6 @@
 "use client"
 
-import { BadgeIndianRupee } from "lucide-react"
+import { IndianRupee } from "lucide-react"
 
 import { LoginForm } from "@/components/login-form"
 import Image from "next/image"
@@ -12,7 +12,7 @@ export default function LoginPage() {
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
             <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <BadgeIndianRupee className="size-4" />
+              <IndianRupee className="size-4" />
             </div>
             Spend Log
           </a>
