@@ -40,7 +40,8 @@ export function LoginForm({
       router.push("/dashboard");
       router.refresh();
     } catch (error) {
-      setError("Something went wrong");
+      console.log(error);
+      setError("Invalid email or password");
     } finally {
       setIsLoading(false);
     }
