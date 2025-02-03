@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar"
+import { AppSidebar } from "@/components/dashboard/sidebar/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -6,14 +6,14 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardPage() {
   return (
@@ -27,9 +27,7 @@ export default function DashboardPage() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Spend Log
-                  </BreadcrumbLink>
+                  <BreadcrumbLink href="#">Spend Log</BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
@@ -49,5 +47,5 @@ export default function DashboardPage() {
         </div>
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }
