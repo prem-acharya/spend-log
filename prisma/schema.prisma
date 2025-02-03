@@ -8,13 +8,13 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String
-  email     String    @unique
+  email     String   @unique
   password  String
-  apiToken  String?   @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  apiToken  String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([email])
-} 
+}

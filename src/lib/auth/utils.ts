@@ -59,10 +59,10 @@ export function getApiTokenFromHeader(req: NextRequest | Request) {
 
 export async function verifyApiToken(apiToken: string | null) {
   if (!apiToken) return false
-  if (!process.env.NEXT_PUBLIC_API_TOKEN_SECRET) return false
+  if (!process.env.API_TOKEN_SECRET) return false
   
   try {
-    return await compare(process.env.NEXT_PUBLIC_API_TOKEN_SECRET, apiToken)
+    return await compare(process.env.API_TOKEN_SECRET, apiToken)
   } catch {
     return false
   }

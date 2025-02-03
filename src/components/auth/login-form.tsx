@@ -1,52 +1,57 @@
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"form">) {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
-    const formData = new FormData(e.currentTarget)
-    const email = formData.get("email") as string
-    const password = formData.get("password") as string
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      })
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
 
-      const data = await res.json()
-
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong")
+      if (result?.error) {
+        setError("Invalid credentials");
+        return;
       }
 
-      // Redirect to dashboard on success
-      router.push("/dashboard")
-      router.refresh()
+      router.push("/dashboard");
+      router.refresh();
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Something went wrong")
+      setError("Something went wrong");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   return (
-    <form onSubmit={onSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
+    <form
+      onSubmit={onSubmit}
+      className={cn("flex flex-col gap-6", className)}
+      {...props}
+    >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Login to your account</h1>
         <p className="text-balance text-sm text-muted-foreground">
@@ -113,5 +118,5 @@ export function LoginForm({
         </a>
       </div> */}
     </form>
-  )
+  );
 }
