@@ -12,7 +12,7 @@ model User {
   name      String
   email     String   @unique
   password  String
-  apiToken  String?  @unique
+  lastLogin DateTime @default(now())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

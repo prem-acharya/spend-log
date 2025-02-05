@@ -1,51 +1,35 @@
+import { auth } from "@/auth";
 import { NextResponse } from "next/server";
-import { withAuth } from "next-auth/middleware";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { getApiTokenFromHeader, verifyApiToken } from "@/lib/auth/utils";
 
-export default withAuth(
-  (req) => {
-    const { nextUrl } = req;
-    const isLoggedIn = !!req.nextauth.token;
-    const isAuthPage = nextUrl.pathname.startsWith("/login");
-    const isApiRoute = nextUrl.pathname.startsWith("/api");
+// Define public routes that don't require authentication
+const PUBLIC_ROUTES = ["/login", "/api/auth"];
+const DEFAULT_REDIRECT = "/dashboard";
 
-    // API Route Protection
-    if (isApiRoute) {
-      const apiToken = getApiTokenFromHeader(req);
-      const isValidToken = verifyApiToken(apiToken);
+export default auth((req) => {
+  const isAuthenticated = Boolean(req.auth);
+  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
+    req.nextUrl.pathname.startsWith(route)
+  );
 
-      if (!isLoggedIn && !isValidToken) {
-        return new NextResponse("API Access Denied!", {
-          status: 403,
-          headers: {
-            "Content-Type": "application/json",
-            "X-API-Token": process.env.API_TOKEN_SECRET ?? "",
-          },
-        });
-      }
+  // Handle public routes
+  if (isPublicRoute) {
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL(DEFAULT_REDIRECT, req.nextUrl));
     }
-
-    // Existing auth page handling
-    if (isAuthPage) {
-      if (isLoggedIn) {
-        return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, req.url));
-      }
-      return null;
-    }
-
-    return null;
-  },
-  {
-    callbacks: {
-      authorized: ({ token }) => !!token,
-    },
-    pages: {
-      signIn: "/login",
-    },
+    return NextResponse.next();
   }
-);
 
+  // Protect private routes
+  if (!isAuthenticated) {
+    const loginUrl = new URL("/login", req.nextUrl);
+    loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  return NextResponse.next();
+});
+
+// Optimize middleware matching
 export const config = {
-  matcher: ["/login", "/dashboard/:path*", "/api/:path*"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.svg$).*)"],
 };

@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { signInSchema } from "@/validation";
 
 export function LoginForm({
   className,
@@ -16,36 +17,44 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setIsLoading(true);
-    setError("");
+  const onSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setIsLoading(true);
+      setError("");
 
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+      const formData = new FormData(event.currentTarget);
+      const data = {
+        email: formData.get("email") as string,
+        password: formData.get("password") as string,
+      };
 
-    try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirect: false,
-      });
-
-      if (result?.error) {
-        setError("Invalid credentials");
+      try {
+        // Client-side validation before hitting the API
+        signInSchema.parse(data);
+      } catch (error) {
+        console.error("Client-side validation error:", error);
+        setIsLoading(false);
         return;
       }
 
-      router.push("/dashboard");
-      router.refresh();
-    } catch (error) {
-      console.log(error);
-      setError("Invalid email or password");
-    } finally {
+      const result = await signIn("credentials", {
+        ...data,
+        redirect: false,
+      });
+
       setIsLoading(false);
-    }
-  }
+
+      if (!result?.ok) {
+        setError("Invalid email or password");
+        return;
+      }
+
+      router.refresh();
+      router.push("/dashboard");
+    },
+    [router]
+  );
 
   return (
     <form
