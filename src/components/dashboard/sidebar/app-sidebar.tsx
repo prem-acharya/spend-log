@@ -1,23 +1,23 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   BookMarked,
   IndianRupee,
   Settings2,
   LayoutDashboard,
-} from "lucide-react"
+} from "lucide-react";
 
-import { NavMain } from "@/components/dashboard/sidebar/nav-main"
-import { NavUser } from "@/components/dashboard/sidebar/nav-user"
-import { TeamSwitcher } from "@/components/dashboard/sidebar/team-switcher"
+import { NavMain } from "@/components/dashboard/sidebar/nav-main";
+import { NavUser } from "@/components/dashboard/sidebar/nav-user";
+import { TeamSwitcher } from "@/components/dashboard/sidebar/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 // This is sample data.
 const data = {
@@ -29,7 +29,7 @@ const data = {
   teams: [
     {
       name: "Spend Log",
-      logo:  IndianRupee,
+      logo: IndianRupee,
       plan: "Track. Learn. Grow.",
     },
   ],
@@ -56,7 +56,7 @@ const data = {
       icon: Settings2,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
@@ -72,5 +72,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }
