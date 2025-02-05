@@ -1,35 +1,40 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
-
-// Define public routes that don't require authentication
-const PUBLIC_ROUTES = ["/login", "/api/auth"];
-const DEFAULT_REDIRECT = "/dashboard";
+import {
+  DEFAULT_LOGIN_REDIRECT,
+  apiAuthPrefix,
+  authRoutes,
+  publicRoutes,
+} from "@/routes";
 
 export default auth((req) => {
-  const isAuthenticated = Boolean(req.auth);
-  const isPublicRoute = PUBLIC_ROUTES.some((route) =>
-    req.nextUrl.pathname.startsWith(route)
-  );
+  const { nextUrl } = req;
+  const isLoggedIn = !!req.auth;
 
-  // Handle public routes
-  if (isPublicRoute) {
-    if (isAuthenticated) {
-      return NextResponse.redirect(new URL(DEFAULT_REDIRECT, req.nextUrl));
+  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+
+  if (isApiAuthRoute) {
+    return NextResponse.next();
+  }
+
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
     }
     return NextResponse.next();
   }
 
-  // Protect private routes
-  if (!isAuthenticated) {
-    const loginUrl = new URL("/login", req.nextUrl);
-    loginUrl.searchParams.set("callbackUrl", req.nextUrl.pathname);
+  if (!isLoggedIn && !isPublicRoute) {
+    const loginUrl = new URL("/login", nextUrl);
+    loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
 });
 
-// Optimize middleware matching
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\.svg$).*)"],
 };

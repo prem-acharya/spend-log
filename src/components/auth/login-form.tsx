@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signInSchema } from "@/validation";
+import { signInSchema } from "@/schema";
 
 export function LoginForm({
   className,

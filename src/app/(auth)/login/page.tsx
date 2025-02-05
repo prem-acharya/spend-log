@@ -10,7 +10,7 @@ export default function LoginPage() {
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
             <Image
-              src="/spendlog_logo.svg"
+              src="/spendlog.svg"
               width={100}
               height={100}
               priority
@@ -26,7 +26,7 @@ export default function LoginPage() {
       </div>
       <div className="relative hidden bg-muted lg:block">
         <Image
-          src="/spendlog_logo.svg"
+          src="/spendlog.svg"
           width={100}
           height={100}
           priority
