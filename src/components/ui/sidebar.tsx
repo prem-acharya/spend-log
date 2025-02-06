@@ -6,11 +6,12 @@ import { VariantProps, cva } from "class-variance-authority";
 import { PanelLeft } from "lucide-react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsTablet } from "@/hooks/use-tablet";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Tooltip,
@@ -31,8 +32,11 @@ type SidebarContext = {
   open: boolean;
   setOpen: (open: boolean) => void;
   openMobile: boolean;
+  openTablet: boolean;
   setOpenMobile: (open: boolean) => void;
+  setOpenTablet: (open: boolean) => void;
   isMobile: boolean;
+  isTablet: boolean;
   toggleSidebar: () => void;
 };
 
@@ -68,7 +72,9 @@ const SidebarProvider = React.forwardRef<
     ref
   ) => {
     const isMobile = useIsMobile();
+    const isTablet = useIsTablet();
     const [openMobile, setOpenMobile] = React.useState(false);
+    const [openTablet, setOpenTablet] = React.useState(false);
 
     // This is the internal state of the sidebar.
     // We use openProp and setOpenProp for control from outside the component.
@@ -91,10 +97,14 @@ const SidebarProvider = React.forwardRef<
 
     // Helper to toggle the sidebar.
     const toggleSidebar = React.useCallback(() => {
-      return isMobile
-        ? setOpenMobile((open) => !open)
-        : setOpen((open) => !open);
-    }, [isMobile, setOpen, setOpenMobile]);
+      if (isMobile) {
+        return setOpenMobile((open) => !open);
+      }
+      if (isTablet) {
+        return setOpenTablet((open) => !open);
+      }
+      return setOpen((open) => !open);
+    }, [isMobile, isTablet, setOpen, setOpenMobile, setOpenTablet]);
 
     // Adds a keyboard shortcut to toggle the sidebar.
     React.useEffect(() => {
@@ -122,11 +132,25 @@ const SidebarProvider = React.forwardRef<
         open,
         setOpen,
         isMobile,
+        isTablet,
         openMobile,
         setOpenMobile,
+        openTablet,
+        setOpenTablet,
         toggleSidebar,
       }),
-      [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
+      [
+        state,
+        open,
+        setOpen,
+        isMobile,
+        isTablet,
+        openMobile,
+        setOpenMobile,
+        openTablet,
+        setOpenTablet,
+        toggleSidebar,
+      ]
     );
 
     return (
@@ -175,7 +199,15 @@ const Sidebar = React.forwardRef<
     },
     ref
   ) => {
-    const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+    const {
+      isMobile,
+      isTablet,
+      state,
+      openMobile,
+      setOpenMobile,
+      openTablet,
+      setOpenTablet,
+    } = useSidebar();
 
     if (collapsible === "none") {
       return (
@@ -200,12 +232,28 @@ const Sidebar = React.forwardRef<
             data-mobile="true"
             className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
             style={
-              {
-                "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-              } as React.CSSProperties
+              { "--sidebar-width": SIDEBAR_WIDTH_MOBILE } as React.CSSProperties
             }
             side={side}
           >
+            <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
+            <div className="flex h-full w-full flex-col">{children}</div>
+          </SheetContent>
+        </Sheet>
+      );
+    }
+
+    if (isTablet) {
+      return (
+        <Sheet open={openTablet} onOpenChange={setOpenTablet} {...props}>
+          <SheetContent
+            data-sidebar="sidebar"
+            data-tablet="true"
+            className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
+            style={{ "--sidebar-width": SIDEBAR_WIDTH } as React.CSSProperties}
+            side={side}
+          >
+            <SheetTitle className="sr-only">Tablet Navigation Menu</SheetTitle>
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
         </Sheet>

@@ -7,7 +7,7 @@ import {
   Settings2,
   LayoutDashboard,
 } from "lucide-react";
-
+import { useAuth } from "@/app/context/AuthProvider";
 import { NavMain } from "@/components/dashboard/sidebar/nav-main";
 import { NavUser } from "@/components/dashboard/sidebar/nav-user";
 import { TeamSwitcher } from "@/components/dashboard/sidebar/team-switcher";
@@ -18,57 +18,62 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useMemo } from "react";
 
-// This is sample data.
-const data = {
-  user: {
-    name: "Spend Log",
-    email: "spendlog@example.com",
-    avatar: "/avatars/spendlog.jpg",
+const navItems = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: LayoutDashboard,
+    isActive: true,
   },
-  teams: [
-    {
-      name: "Spend Log",
-      logo: IndianRupee,
-      plan: "Track. Learn. Grow.",
-    },
-  ],
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-      isActive: true,
-    },
-    {
-      title: "Spend",
-      url: "#",
-      icon: IndianRupee,
-    },
-    {
-      title: "Reports",
-      url: "#",
-      icon: BookMarked,
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-    },
-  ],
-};
+  {
+    title: "Spend",
+    url: "#",
+    icon: IndianRupee,
+  },
+  {
+    title: "Reports",
+    url: "#",
+    icon: BookMarked,
+  },
+  {
+    title: "Settings",
+    url: "#",
+    icon: Settings2,
+  },
+];
+
+const teams = [
+  {
+    name: "Spend Log",
+    logo: IndianRupee,
+    plan: "Track. Learn. Grow.",
+  },
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth();
+
+  const userData = useMemo(
+    () => ({
+      name: user?.name ?? "Guest",
+      email: user?.email ?? "guest@example.com",
+      avatar: "/avatars/default.jpg",
+    }),
+    [user?.name, user?.email]
+  );
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher teams={teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navItems} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={userData} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

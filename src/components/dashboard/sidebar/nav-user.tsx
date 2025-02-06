@@ -33,6 +33,13 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar();
 
+  const initials = user.name
+    .split(" ")
+    .map((word) => word[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -45,7 +52,7 @@ export function NavUser({
               <Avatar className="h-8 w-8 rounded-lg">
                 {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
                 <AvatarFallback className="rounded-lg bg-foreground/10">
-                  SL
+                  {initials}
                 </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
@@ -66,7 +73,7 @@ export function NavUser({
                 <Avatar className="h-8 w-8 rounded-lg">
                   {/* <AvatarImage src={user.avatar} alt={user.name} /> */}
                   <AvatarFallback className="rounded-lg bg-foreground/10">
-                    SL
+                    {initials}
                   </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
